@@ -23,6 +23,7 @@
 #import "SoundUtil.h"
 #import "WordPressComApiCredentials.h"
 #import "PocketAPI.h"
+#import "SharePostController.h"
 
 @interface WordPressAppDelegate (Private)
 - (void)setAppBadge;
@@ -32,6 +33,7 @@
 - (void)customizeAppearance;
 - (void)toggleExtraDebuggingIfNeeded;
 - (void)handleLogoutOrBlogsChangedNotification:(NSNotification *)notification;
+- (void)handleSharingToWordPressFromApp:(NSURL *)shareUrl;
 @end
 
 @implementation WordPressAppDelegate {
@@ -318,7 +320,9 @@
                 NSLog(@"Camera+ picker canceled");
             }];
             return YES;
-        }
+        } else if ([[url absoluteString] hasPrefix:@"wordpress-share://"]) {
+			[self handleSharingToWordPressFromApp:url];
+		}
     }
     return NO;
 }
@@ -943,6 +947,9 @@
 	[self toggleExtraDebuggingIfNeeded];
 }
 
+- (void)handleSharingToWordPressFromApp:(NSURL *)shareURL {
+    [SharePostController shareWithURL:shareURL];
+}
 
 #pragma mark - Push Notification delegate
 
